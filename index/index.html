@@ -4,23 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Meu Painel de FIIs</title>
+    <link rel="icon" type="image/png" href="image/logo.png">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
         :root{--bg-color:#121212;--surface-color:#1e1e1e;--primary-color:#3b82f6;--text-color:#e0e0e0;--text-secondary:#a0a0a0;--border-color:#333}
-        body{font-family:'Roboto',sans-serif;background-color:var(--bg-color);color:var(--text-color);margin:0;padding:24px;display:flex;flex-direction:column;align-items:center}
-        .container{width:100%;max-width:1200px}
-        h1{text-align:center;color:white;font-weight:500;margin-bottom:32px}
+        body{font-family:'Roboto',sans-serif;background-color:var(--bg-color);color:var(--text-color);margin:0;padding:16px;display:flex;flex-direction:column;align-items:center; min-height: 100vh; box-sizing: border-box;}
+        .container{width:100%;max-width:1200px; flex-grow: 1;}
+        h1{text-align:center;color:white;font-weight:500;margin-bottom:24px;font-size:24px}
         .topo-container{display:grid;grid-template-columns:2fr 1fr;gap:24px;margin-bottom:24px}
-        .dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(350px,1fr));gap:24px}
-        .card{background-color:var(--surface-color);border-radius:12px;padding:24px;border:1px solid var(--border-color);box-shadow:0 4px 12px rgba(0,0,0,.1)}
-        .card h2{margin-top:0;font-weight:500;border-bottom:1px solid var(--border-color);padding-bottom:12px;margin-bottom:16px}
-        .form-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:16px;align-items:flex-end}
-        input[type="text"],input[type="number"]{width:100%;padding:10px;background-color:var(--bg-color);border:1px solid var(--border-color);border-radius:6px;color:var(--text-color);font-size:14px;box-sizing:border-box}
-        button{padding:10px 20px;background-color:var(--primary-color);color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:background-color .2s}
-        button:hover{background-color:#2563eb}
-        table{width:100%;border-collapse:collapse}
-        th,td{padding:12px;text-align:left;border-bottom:1px solid var(--border-color);font-size:14px}
+        .dashboard{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:24px}
+        .card{background-color:var(--surface-color);border-radius:12px;padding:20px;border:1px solid var(--border-color);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+        .card h2{margin-top:0;font-weight:500;border-bottom:1px solid var(--border-color);padding-bottom:12px;margin-bottom:16px;font-size:18px}
+        .form-grid{display:grid;grid-template-columns:1fr;gap:16px;align-items:flex-end}
+        @media (min-width:600px){.form-grid{grid-template-columns:1fr 1fr 1fr auto}}
+        input[type="text"],input[type="number"]{width:100%;padding:12px;background-color:var(--bg-color);border:1px solid var(--border-color);border-radius:6px;color:var(--text-color);font-size:14px;box-sizing:border-box}
+        button{padding:12px 20px;background-color:var(--primary-color);color:white;border:none;border-radius:6px;cursor:pointer;font-size:14px;font-weight:500;transition:background-color .2s;width:100%}
+        @media (min-width:600px){button{width:auto}}
+        table{width:100%;border-collapse:collapse;display:block;overflow-x:auto}
+        th,td{padding:12px 8px;text-align:left;border-bottom:1px solid var(--border-color);font-size:14px}
         th{font-weight:500;color:var(--text-secondary)}
         td.number,th.number{text-align:right}
         .delete-btn{background:none;border:none;color:#ef4444;cursor:pointer;font-size:18px}
@@ -30,14 +32,15 @@
         .fii-pill{background-color:#2c2c2c;padding:6px 12px;border-radius:16px;font-size:14px;border:1px solid var(--border-color)}
         #metricas-gerais-container{display:flex;justify-content:space-around;text-align:center;gap:16px}
         .metrica-item h3{margin:0 0 4px 0;font-size:14px;font-weight:400;color:var(--text-secondary)}
-        .metrica-item p{margin:0;font-size:24px;font-weight:700;color:white}
+        .metrica-item p{margin:0;font-size:22px;font-weight:700;color:white}
         .calculadora-secao{margin-bottom:20px}
         .calculadora-secao:last-child{margin-bottom:0}
         .calculadora-secao h3{font-size:16px;font-weight:500;margin:0 0 12px 0}
         .calculadora-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
         .calculadora-resultado{margin-top:12px;font-size:14px;background-color:#121212;padding:10px;border-radius:6px}
         .calculadora-resultado span{color:white;font-weight:bold}
-        @media (max-width:900px){.topo-container{grid-template-columns:1fr}}
+        footer{width:100%;text-align:center;padding:24px 0;margin-top:48px;border-top:1px solid var(--border-color);color:var(--text-secondary);font-size:14px}
+        @media (max-width:900px){.topo-container{grid-template-columns:1fr}body{padding:8px}}
     </style>
 </head>
 <body>
@@ -49,14 +52,14 @@
                 <div class="form-grid">
                     <div><label for="ticker-input">Ticker do FII</label><input type="text" id="ticker-input" placeholder="Ex: MXRF11"></div>
                     <div><label for="qtd-input">Quantidade</label><input type="number" id="qtd-input" placeholder="Ex: 15"></div>
-                    <div><label for="preco-input">Preço Pago (por cota)</label><input type="number" id="preco-input" placeholder="Ex: 9.41"></div>
+                    <div><label for="preco-input">Preço Pago</label><input type="number" id="preco-input" placeholder="Ex: 9.41"></div>
                     <button onclick="adicionarAtivo()">Adicionar</button>
                 </div>
             </div>
             <div class="card">
                 <h2>Calculadora Rápida</h2>
                 <div class="calculadora-secao">
-                    <h3>Calcular Quantidade de Cotas</h3>
+                    <h3>Calcular Quantidade</h3>
                     <div class="calculadora-grid">
                         <input type="number" id="calc-valor-total" placeholder="Valor a investir (R$)">
                         <input type="number" id="calc-preco-cota1" placeholder="Preço por cota (R$)">
@@ -66,7 +69,7 @@
                 </div>
                 <hr style="border-color: var(--border-color); margin: 20px 0;">
                 <div class="calculadora-secao">
-                    <h3>Calcular Custo Total</h3>
+                    <h3>Calcular Custo</h3>
                     <div class="calculadora-grid">
                         <input type="number" id="calc-qtd-cotas" placeholder="Nº de cotas">
                         <input type="number" id="calc-preco-cota2" placeholder="Preço por cota (R$)">
@@ -77,18 +80,16 @@
             </div>
         </div>
         <div class="dashboard">
-            <div class="card" style="grid-column: 1 / -1;"><h2>Minha Carteira</h2><table id="portfolio-table"><thead><tr><th>Ticker</th><th>Categoria</th><th class="number">Quantidade</th><th class="number">Preço Médio</th><th class="number"></th></tr></thead><tbody></tbody></table></div>
-            <div class="card"><h2>Alocação por Categoria</h2><table id="alocacao-table"><thead><tr><th>Categoria</th><th class="number">Atual (%)</th><th class="number">Alvo (%)</th></tr></thead><tbody></tbody></table></div>
-            <div class="card"><h2>Gráfico de Alocação</h2><canvas id="alocacao-chart"></canvas></div>
+            <div class="card" style="grid-column: 1 / -1;"><h2>Minha Carteira</h2><div style="width:100%; overflow-x:auto;"><table id="portfolio-table"><thead><tr><th>Ticker</th><th>Categoria</th><th class="number">Qtd</th><th class="number">P. Médio</th><th class="number"></th></tr></thead><tbody></tbody></table></div></div>
+            <div class="card"><h2>Alocação</h2><table id="alocacao-table"><thead><tr><th>Categoria</th><th class="number">Atual %</th><th class="number">Alvo %</th></tr></thead><tbody></tbody></table></div>
+            <div class="card"><h2>Gráfico</h2><canvas id="alocacao-chart"></canvas></div>
             <div class="card"><h2>Métricas Gerais</h2><div id="metricas-gerais-container"></div></div>
-            <div class="card" style="grid-column: 1 / -1;"><h2>Fundos Disponíveis para Investir</h2><div id="fundos-disponiveis-container"></div></div>
+            <div class="card" style="grid-column: 1 / -1;"><h2>Fundos Disponíveis</h2><div id="fundos-disponiveis-container"></div></div>
         </div>
     </div>
+    <footer id="main-footer"></footer>
 
 <script>
-    // --- INÍCIO DO JAVASCRIPT CORRETO E LEGÍVEL ---
-
-    // --- CONFIGURAÇÃO GLOBAL ---
     const ALOCACAO_ALVO = {
         'Fundos de CRI': 27.0,
         'Fundos de Shopping': 17.0,
@@ -108,7 +109,6 @@
         'BTHF11': 'FoF', 'KFOF11': 'FoF'
     };
 
-    // --- LÓGICA DE PERSISTÊNCIA ---
     function salvarPortfolio(portfolio) {
         localStorage.setItem('meuPortfolioFIIs', JSON.stringify(portfolio));
     }
@@ -118,26 +118,21 @@
         return portfolioJSON ? JSON.parse(portfolioJSON) : [];
     }
 
-    // --- FUNÇÃO PRINCIPAL DE RENDERIZAÇÃO ---
     function renderizarTudo() {
         const portfolio = carregarPortfolio();
         const analise = analisarPortfolio(portfolio);
-
         renderizarTabelaPortfolio(portfolio);
         renderizarTabelaAlocacao(analise.porCategoria);
         renderizarGrafico(analise.porCategoria);
         renderizarMetricasGerais(portfolio, analise);
     }
 
-    // --- FUNÇÕES DE CÁLCULO ---
     function analisarPortfolio(portfolio) {
         let patrimonioTotal = 0;
         const analiseCategorias = {};
-
         for (const categoria in ALOCACAO_ALVO) {
             analiseCategorias[categoria] = { valor: 0, percentual: 0 };
         }
-
         portfolio.forEach(ativo => {
             const valorAtivo = ativo.quantidade * ativo.preco_medio;
             patrimonioTotal += valorAtivo;
@@ -146,21 +141,17 @@
                 analiseCategorias[categoria].valor += valorAtivo;
             }
         });
-
         if (patrimonioTotal > 0) {
             for (const categoria in analiseCategorias) {
                 analiseCategorias[categoria].percentual = (analiseCategorias[categoria].valor / patrimonioTotal) * 100;
             }
         }
-
         return { patrimonioTotal: patrimonioTotal, porCategoria: analiseCategorias };
     }
 
-    // --- FUNÇÕES DE ATUALIZAÇÃO DA INTERFACE (UI) ---
     function renderizarTabelaPortfolio(portfolio) {
         const tbody = document.querySelector("#portfolio-table tbody");
         tbody.innerHTML = '';
-
         portfolio.forEach((ativo, index) => {
             const categoria = CATEGORIAS_FII[ativo.ticker.toUpperCase()] || 'Outros';
             const tr = document.createElement('tr');
@@ -178,7 +169,6 @@
     function renderizarTabelaAlocacao(analiseCategorias) {
         const tbody = document.querySelector("#alocacao-table tbody");
         tbody.innerHTML = '';
-
         for (const categoria in analiseCategorias) {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -194,7 +184,6 @@
         const container = document.getElementById('metricas-gerais-container');
         const totalAtivos = portfolio.length;
         const totalCotas = portfolio.reduce((soma, ativo) => soma + ativo.quantidade, 0);
-
         container.innerHTML = `
             <div class="metrica-item">
                 <h3>Patrimônio Total</h3>
@@ -216,11 +205,9 @@
         const ctx = document.getElementById('alocacao-chart').getContext('2d');
         const labels = Object.keys(analiseCategorias);
         const data = labels.map(label => analiseCategorias[label].percentual);
-
         if (meuGrafico) {
             meuGrafico.destroy();
         }
-
         meuGrafico = new Chart(ctx, {
             type: 'doughnut',
             data: {
@@ -238,9 +225,7 @@
                 plugins: {
                     legend: {
                         position: 'top',
-                        labels: {
-                            color: '#E0E0E0'
-                        }
+                        labels: { color: '#E0E0E0' }
                     }
                 }
             }
@@ -251,7 +236,6 @@
         const container = document.getElementById('fundos-disponiveis-container');
         container.innerHTML = '';
         const grupos = {};
-
         for (const ticker in CATEGORIAS_FII) {
             const categoria = CATEGORIAS_FII[ticker];
             if (!grupos[categoria]) {
@@ -259,49 +243,39 @@
             }
             grupos[categoria].push(ticker);
         }
-
         for (const categoria in grupos) {
             const grupoDiv = document.createElement('div');
             grupoDiv.className = 'categoria-grupo';
-            
             const titulo = document.createElement('h3');
             titulo.textContent = categoria;
             grupoDiv.appendChild(titulo);
-            
             const pillsContainer = document.createElement('div');
             pillsContainer.className = 'pills-container';
-
             grupos[categoria].forEach(ticker => {
                 const pill = document.createElement('span');
                 pill.className = 'fii-pill';
                 pill.textContent = ticker;
                 pillsContainer.appendChild(pill);
             });
-            
             grupoDiv.appendChild(pillsContainer);
             container.appendChild(grupoDiv);
         }
     }
-
-    // --- FUNÇÕES DE AÇÃO DO USUÁRIO ---
+    
     function adicionarAtivo() {
         const ticker = document.getElementById('ticker-input').value.toUpperCase().trim();
         const quantidade = parseInt(document.getElementById('qtd-input').value);
         const preco = parseFloat(document.getElementById('preco-input').value);
-
         if (!ticker || !quantidade || !preco || quantidade <= 0 || preco <= 0) {
             alert("Por favor, preencha todos os campos com valores válidos.");
             return;
         }
-        
         if (!CATEGORIAS_FII[ticker]) {
             alert(`O ticker "${ticker}" não é reconhecido. Verifique se digitou corretamente.`);
             return;
         }
-
         const portfolio = carregarPortfolio();
         const ativoExistente = portfolio.find(a => a.ticker === ticker);
-
         if (ativoExistente) {
             const custoTotalAntigo = ativoExistente.quantidade * ativoExistente.preco_medio;
             const custoNovaCompra = quantidade * preco;
@@ -311,10 +285,8 @@
         } else {
             portfolio.push({ ticker: ticker, quantidade: quantidade, preco_medio: preco });
         }
-
         salvarPortfolio(portfolio);
         renderizarTudo();
-
         document.getElementById('ticker-input').value = '';
         document.getElementById('qtd-input').value = '';
         document.getElementById('preco-input').value = '';
@@ -329,21 +301,17 @@
         }
     }
 
-    // --- FUNÇÕES DA CALCULADORA ---
     function calcularQtdCotas() {
         const valorTotal = parseFloat(document.getElementById('calc-valor-total').value);
         const precoCota = parseFloat(document.getElementById('calc-preco-cota1').value);
         const resultadoSpan = document.getElementById('resultado-qtd');
-
         if (!valorTotal || !precoCota || valorTotal <= 0 || precoCota <= 0) {
             resultadoSpan.textContent = '--';
             return;
         }
-
         const qtdComprada = Math.floor(valorTotal / precoCota);
         const custoReal = qtdComprada * precoCota;
         const troco = valorTotal - custoReal;
-
         resultadoSpan.textContent = `${qtdComprada} cotas (Troco: R$ ${troco.toFixed(2)})`;
     }
 
@@ -351,20 +319,24 @@
         const qtdCotas = parseInt(document.getElementById('calc-qtd-cotas').value);
         const precoCota = parseFloat(document.getElementById('calc-preco-cota2').value);
         const resultadoSpan = document.getElementById('resultado-custo');
-
         if (!qtdCotas || !precoCota || qtdCotas <= 0 || precoCota <= 0) {
             resultadoSpan.textContent = '--';
             return;
         }
-
         const custoTotal = qtdCotas * precoCota;
         resultadoSpan.textContent = `R$ ${custoTotal.toFixed(2)}`;
     }
 
-    // --- INICIALIZAÇÃO ---
+    function criarFooter() {
+        const footer = document.getElementById('main-footer');
+        const anoAtual = new Date().getFullYear();
+        footer.innerHTML = `&copy; ${anoAtual} Enzo Garbim. Todos os direitos reservados.`;
+    }
+
     window.onload = () => {
         renderizarTudo();
         renderizarFundosDisponiveis();
+        criarFooter();
     };
 </script>
 </body>
